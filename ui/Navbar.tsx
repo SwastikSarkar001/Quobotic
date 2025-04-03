@@ -7,23 +7,42 @@ import { LuChevronDown } from "react-icons/lu";
 import { PiBuilding } from "react-icons/pi";
 import { AiOutlineProduct } from "react-icons/ai";
 import { GrServices } from "react-icons/gr";
+import { useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
 
 export default function Navbar() {
-
+  const { scrollYProgress } = useScroll();
+  const maxWidth = useTransform(scrollYProgress, [0, 0.15], [1280, 600]);
+  const borderColor = useTransform(
+    scrollYProgress,
+    [0.1, 0.2], 
+    ["transparent", "#a6a09b50"]
+  );
+  
   return (
-    <header className="container pointer-events-none fixed left-0 right-0 top-0 z-50 w-full px-0 py-4">
-      <nav className="max-screen pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full px-6 py-1 transition-colors sm:pr-4">
+    <header className="container mx-auto pointer-events-none fixed left-0 right-0 top-0 z-50 w-full px-2 py-4">
+      <motion.nav
+        style={{ 
+          maxWidth,
+          borderColor
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 30
+        }}
+        className="mx-auto backdrop-blur-lg border-2 pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full px-4 py-1 transition-colors">
         <CompanyIcon />
         <CompanyNav />
         <CompanyOptions />
-      </nav>
+      </motion.nav>
     </header>
   )
 }
 
 function CompanyIcon() {
   return (
-    <Link href="/" className="ml-4">
+    <Link href="/" className="">
       <Image
         src="/logo-only.png"
         alt="Quobotic Consulting"
@@ -69,14 +88,14 @@ const navOptions: NavOptions[] = [
 ]
 
 function CompanyNav() {
+  const [active, setActive] = useState<number | null>(null)
   return (
-    <ul className="flex gap-8 not-sm:hidden">
+    <ul className="flex not-sm:hidden">
       {
         navOptions.map((option, i) => (
-          <Tab key={i} {...option} />
+          <Tab key={i} {...option} index={i} active={active} setActive={setActive} />
         ))
       }
-      <Cursor />
     </ul>
   )
 }
@@ -88,31 +107,104 @@ type NavOptions = {
   subOptions?: NavOptions[]
 }
 
-function Tab({ logo, label, url, subOptions }: NavOptions) {
+function Tab({
+  label,
+  url,
+  subOptions,
+  index,
+  active,
+  setActive
+}: NavOptions & { index: number, active: number | null, setActive: (index: number | null) => void }) {
   return (
     <li>
-      <Link href={ url } className="relative flex items-center gap-1.5 py-2">
-        { logo }
-        <div>{ label }</div>
-        { subOptions && <LuChevronDown /> }
-      </Link>
+      {
+        subOptions ? (
+          <div
+            onMouseEnter={() => setActive(index)}
+            onMouseLeave={() => setActive(null)}
+            className="relative flex items-center gap-1.5 py-1 px-3"
+          >
+            <div>{ label }</div>
+            { subOptions && <LuChevronDown /> }
+            {
+              active === index && subOptions && (
+                <motion.ul className="bg-stone-900 absolute top-[115%] left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-backdrop shadow backdrop-blur-md rounded-lg p-4">
+                  {
+                    subOptions.map((option, i) => (
+                      <SubTab key={i} {...option} />
+                    ))
+                  }
+                </motion.ul>
+              )
+            }
+            {
+              active === index && <Cursor />
+            }
+          </div>
+        ) : (
+          <Link
+            onMouseEnter={() => setActive(index)}
+            onMouseLeave={() => setActive(null)}
+            href={ url } className="relative flex items-center gap-1.5 py-1 px-3"
+          >
+            <div>{ label }</div>
+            {
+              active === index && <Cursor />
+            }
+          </Link>
+
+        )
+      }
+    </li>
+  )
+}
+
+function SubTab({ label, url }: NavOptions) {
+  return (
+    <li>
+      <Link href={ url }>{ label }</Link>
     </li>
   )
 }
 
 function Cursor() {
   return (
-    <li className="absolute flex items-center gap-1.5 py-2" />
+    <motion.div
+      layoutId="hover-navbar"
+      className="absolute inset-0 rounded-full py-2 -z-1 bg-primary/60"
+    />
   )
 }
 
 function CompanyOptions() {
+  const [openModal, setOpenModal] = useState(false)
+  const toggler = () => setOpenModal(prev => !prev)
   return (
     <div>
-      <button className="cursor-pointer hover:bg-secondary hover:text-black bg-primary text-seconbg-secondary transition-colors py-2 px-4 rounded-full">
+      <motion.button
+        layoutId="contact-us-modal"
+        onClick={toggler}
+        className="relative cursor-pointer hover:bg-secondary hover:text-black bg-primary text-seconbg-secondary transition-colors py-2 px-4 rounded-full"
+      >
         Contact Us
-      </button>
+      </motion.button>
+      <AnimatePresence>
+        {
+          openModal && <ContactUsModal />
+        }
+      </AnimatePresence>
     </div>
+  )
+}
+
+function ContactUsModal() {
+  return (
+    <motion.div
+      layoutId='contact-us-modal'
+      className="fixed flex"
+    >
+
+    </motion.div>
   )
 }
 

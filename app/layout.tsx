@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AnimatedScroll from "@/ui/AnimatedScroll";
+import AnimatedScroll from "@/ui/SmoothScrolling";
 
 
 export const metadata: Metadata = {

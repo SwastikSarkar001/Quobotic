@@ -16,8 +16,8 @@ export default function HeroSection() {
   const y = useTransform(scrollYProgress, [0, 0.5], [0, 100])
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
   return (
-    <section ref={ref} className="h-screen relative grid place-items-center">
-      <div className="absolute right-0 top-0 w-full h-full opacity-40 pointer-events-none">
+    <section ref={ref} className="h-screen relative grid place-items-center bg-radial-[circle_at_50%_-60%] from-primary/80 to-transparent to-60%">
+      <div className="absolute right-0 top-0 -z-1 w-full h-full opacity-40 pointer-events-none">
         <WorldGlobe />
       </div>
       <motion.div
