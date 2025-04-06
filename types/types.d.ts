@@ -7,3 +7,14 @@ export type MessageType = {
   file?: string;
   timestamp: Date;
 };
+
+export type emailFormType = {
+  error?: {
+    name?: string;
+    email?: string;
+    subject?: string;
+    message?: string;
+    other?: string;
+  },
+  success?: boolean;
+}

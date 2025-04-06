@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AnimatedScroll from "@/ui/SmoothScrolling";
+import { Toaster } from 'sonner'
 
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({
       <AnimatedScroll>
         {children}
       </AnimatedScroll>
+      <Toaster position='top-right' theme="dark" closeButton duration={6000} />
     </html>
   );
 }

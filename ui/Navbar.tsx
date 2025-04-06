@@ -5,10 +5,10 @@ import Link from "next/link";
 import { BiHome } from "react-icons/bi";
 import { BsDatabaseCheck, BsSend } from "react-icons/bs";
 import { LuChevronDown } from "react-icons/lu";
-import { PiBuilding, PiExamBold } from "react-icons/pi";
+import { PiBuilding, PiExamBold, PiSpinnerBold } from "react-icons/pi";
 import { AiOutlineProduct } from "react-icons/ai";
 import { GrServices, GrTechnology } from "react-icons/gr";
-import { useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, Variants } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useLenis } from "lenis/react";
@@ -16,6 +16,9 @@ import { MdOutlineBusinessCenter } from "react-icons/md";
 import { GoArrowUpRight } from "react-icons/go";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { LiaIndustrySolid } from "react-icons/lia";
+import sendEmail from "@/actions/send-email";
+import { emailFormType } from "@/types/types";
+import { toast } from "sonner";
 
 export default function Navbar() {
   const { scrollYProgress } = useScroll();
@@ -112,25 +115,25 @@ const navOptions: NavOptions[] = [
         logo: <BsDatabaseCheck />,
         label: "Database Support",
         description: "Our consultants, supporting different database systems with solutions for backups, performance issues & database design.",
-        url: "/services/consulting"
+        url: "/services/database"
       },
       {
         logo: <GrTechnology />,
         label: "IT Consulting",
         description: "Customised Web Based Software as per requirement, Software and Process Flow along with Software Maintenance.",
-        url: "/services/development"
+        url: "/services/consulting"
       },
       {
         logo: <IoCloudUploadOutline />,
         label: "Cloud Migration",
         description: "Migration of Existing Database from Baremetal to Oracle Cloud from hetrogeneous environment along with zero downtime.",
-        url: "/services/maintenance"
+        url: "/services/migration"
       },
       {
         logo: <LiaIndustrySolid />,
         label: "IIoT and Industry 4.0",
         description: "Providing SaaS based solutions for Industry 4.0, Healthcare and Surveillance using IOT & AI for Last-mile Automation.",
-        url: "/services/maintenance"
+        url: "/services/iiot"
       },
     ]
   }
@@ -175,7 +178,7 @@ function Tab({
             className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-300' : 'text-secondary'}`}
           >
             <div>{ label }</div>
-            { subOptions && <LuChevronDown className={`${active === index ? '-rotate-180' : 'rotate-0'} transition-transform`} /> }
+            { subOptions && <LuChevronDown className={`${active === index ? 'rotate-180' : 'rotate-0'} transition-transform`} /> }
             <AnimatePresence>
               {
                 active === index && subOptions && <SubTabOptions subOptions={subOptions} url={url} />
@@ -209,7 +212,12 @@ function Tab({
 
 function SubTabOptions({ subOptions, url }: { subOptions: Omit<NavOptions, 'subOptions'>[], url: string }) {
   return (
-    <motion.ul className="bg-stone-900 text-secondary w-80 absolute top-[120%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2">
+    <motion.ul
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="bg-stone-900 text-secondary w-80 absolute top-[130%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2 after:absolute after:bg-slate-900 after:size-2 after:left-1/2 after:-translate-x-1/2 after:-top-1 after:rotate-45 after:-z-1"
+    >
       {
         subOptions.slice(0, 3).map((option, i) => (
           <SubTab key={i} {...option} />
@@ -314,6 +322,38 @@ function ContactUsModal({ toggler, ref }: {toggler: () => void, ref?: React.Ref<
       y: 0
     }
   }
+
+  const initState: emailFormType = {}
+
+  const [state, action, isPending] = useActionState(sendEmail, initState)
+
+  useEffect(() => {
+    if (!isPending && state.success !== undefined) {
+      if (state.success) {
+        toggler()
+        toast.success('Email sent successfully! Thank you for contacting us.')
+      } else {
+        if (state.error) {
+          if (state.error.name) {
+            toast.error(state.error.name)
+          }
+          else if (state.error.email) {
+            toast.error(state.error.email)
+          }
+          else if (state.error.subject) {
+            toast.error(state.error.subject)
+          }
+          else if (state.error.message) {
+            toast.error(state.error.message)
+          }
+          else {
+            toast.error('Failed to send email. Please try again later.')
+          }
+        }
+      }
+    }
+  }, [isPending, state, toggler]);
+
   return createPortal(
     <>
       <motion.div
@@ -336,36 +376,45 @@ function ContactUsModal({ toggler, ref }: {toggler: () => void, ref?: React.Ref<
             <p id='contact-us-description' className="text-center text-stone-400 px-6 text-sm">
               Have questions or need assistance? Drop us a message and our team will get back to you as soon as possible. We&apos;re here to help!
             </p>
-          <form className="flex flex-col items-center w-full gap-2 mt-2 mb-5">
+          <form action={action} className="flex flex-col items-center w-full gap-2 mt-2 mb-5">
             <input
               type="text"
               name='name'
               placeholder="Your Name"
-              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              className="w-[90%] sm:w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              required
             />
             <input
               type="email"
               name='email'
               placeholder="Your Email"
-              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              className="w-[90%] sm:w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              required
             />
             <input
               type="text"
               name='subject'
               placeholder="Subject"
-              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              className="w-[90%] sm:w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+              required
             />
             <textarea
               name='message'
               placeholder="Your Message"
-              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop resize-none transition-colors disabled:cursor-not-allowed"
+              className="w-[90%] sm:w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop resize-none transition-colors disabled:cursor-not-allowed"
               rows={4}
+              required
             />
             <button
               type="submit"
-              className="cursor-pointer bg-primary hover:bg-secondary text-secondary hover:text-black flex gap-2 items-center mt-2 text-seconbg-secondary transition-colors py-2 px-4 rounded-full"
+              disabled={isPending}
+              className="cursor-pointer disabled:grayscale disabled:cursor-not-allowed select-none transition-all bg-primary not-disabled:hover:bg-secondary text-secondary not-disabled:hover:text-black flex gap-2 items-center mt-2 text-seconbg-secondary py-2 px-4 rounded-full"
             >
-              <BsSend className="size-[1.15em]" /><div>Send Message</div>
+              {
+                isPending ?
+                <><PiSpinnerBold className="size-[1.15em] animate-spin" /><div>Sending email...</div></> :
+                <><BsSend className="size-[1.15em]" /><div>Send Message</div></>
+              }
             </button>
           </form>
         </div>
