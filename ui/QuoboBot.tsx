@@ -20,12 +20,7 @@ export default function QuoboBotButton() {
   };
 
   const handleKeyEvent = (event: KeyboardEvent) => {
-    if (isChatOpen && event.key === "Escape") {
-      event.stopPropagation();
-      console.log('Hello!')
-      toggleChat()
-    }
-    else if (!isChatOpen && (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "q") {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "q") {
       event.preventDefault();
       toggleChat()
     }
@@ -67,21 +62,40 @@ export default function QuoboBotButton() {
     };
   }, [isChatOpen, lenis]);
 
+  const [shortcut, setShortcut] = useState<string>("");
+
+  useEffect(() => {
+    const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator.userAgent);
+    setShortcut(isMac ? "⌘Q" : "Ctrl+Q");
+  }, []);
+
   return (
     <>
       <motion.button
         layoutId="ask-quobobot"
-        initial={{ opacity: 0, y: 20 }}
+        initial={{
+          opacity: 0,
+          y: 20,
+        }}
         animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 0 }}
+        whileHover={{
+          scale: 1.05,
+          backgroundColor: '#f5f5f4',
+          color: '#000',
+          transition: {
+            duration: 0.15,
+          }
+        }}
         transition={showAnimation ? { duration: 0.8, delay: 0.6 } : undefined}
         onClick={toggleChat}
         aria-labelledby="ask-quobobot"
-        className={`group right-10 cursor-pointer bg-primary hover:bg-secondary rounded-full hover:scale-105 text-secondary hover:text-black fixed z-100 p-4 bottom-24`}
+        className={`group right-10 cursor-pointer bg-primary rounded-full text-secondary fixed z-100 p-4 bottom-24`}
       >
         <BiBot className="size-8" />
-        <div id='ask-quobobot' className="opacity-0 space-y-0.5 transition-all text-secondary group-hover:opacity-100 absolute leading-4 -z-1 text-sm text-nowrap pointer-events-none top-0 group-hover:-top-10 left-1/2 -translate-x-1/2 py-1 px-2 bg-primary rounded-full after:absolute after:size-2 after:bg-primary after:-bottom-1 after:-z-1 after:right-1/2 after:translate-x-1/2 after:rotate-45">
+        <div id='ask-quobobot' className="opacity-0 space-y-0.5 transition-all text-secondary group-hover:opacity-100 absolute leading-4 -z-1 text-sm text-nowrap pointer-events-none top-0 group-hover:-top-16 left-1/2 -translate-x-1/2 py-2 px-2 bg-primary rounded-lg after:absolute after:size-2 after:bg-primary after:-bottom-1 after:-z-1 after:right-1/2 after:translate-x-1/2 after:rotate-45">
           <div>Ask QuoboBot</div>
-          <div className="text-xs text-secondary/70">Ctrl + Q</div>
+          <kbd className="px-1.5 py-0.5 text-xs font-semibold text-stone-300">{shortcut}</kbd>
         </div>
       </motion.button>
 
@@ -107,13 +121,31 @@ export default function QuoboBotButton() {
 function QuoboBotChat({toggleChat, ref}: {toggleChat: () => void, ref?: React.Ref<HTMLDivElement>}) {
   const formRef = useRef<HTMLFormElement | null>(null)
   const endRef = useRef<HTMLDivElement | null>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const [fetchingAnswer, setFetchingAnswer] = useState(false)  // eslint-disable-line
 
   // Configure server actions here using useFormAction
 
   useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  
+  useEffect(() => {
     endRef.current?.scrollIntoView();
   }, []);
+
+  useEffect(() => {
+    const handleModalKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape" || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "q")) {
+        e.preventDefault();
+        toggleChat();
+      }
+    };
+    document.addEventListener("keydown", handleModalKey);
+    return () => {
+      document.removeEventListener("keydown", handleModalKey);
+    };
+  }, [toggleChat]);
 
   useEffect(() => {
     const scrollableDiv = endRef.current?.parentElement;
@@ -143,6 +175,7 @@ function QuoboBotChat({toggleChat, ref}: {toggleChat: () => void, ref?: React.Re
       <button
         onClick={toggleChat}
         aria-label="Close QuoboBot"
+        title="Close QuoboBot"
         className="self-end cursor-pointer ring-2 px-1.5 rounded-full text-stone-400 hover:text-stone-200 transition-colors"
       >
         ✖
@@ -188,6 +221,7 @@ function QuoboBotChat({toggleChat, ref}: {toggleChat: () => void, ref?: React.Re
         <input
           type="text"
           name='text'
+          ref={inputRef}
           disabled={fetchingAnswer}
           placeholder={fetchingAnswer ? "QuoboBot is responding..." : "Ask QuoboBot about..."}
           className="disabled:cursor-not-allowed w-full p-2 pr-10 border rounded border-border/50 text-sm"
@@ -203,6 +237,8 @@ function SubmitButton() {
   return (
     <button
       type='submit'
+      aria-label='Send Prompt'
+      title='Send Prompt'
       className="cursor-pointer hover:bg-stone-500/50 p-1 rounded absolute z-1 top-1/2 right-2 -translate-y-1/2"
     >
       {

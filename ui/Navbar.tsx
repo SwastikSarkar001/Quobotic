@@ -3,12 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { BiHome } from "react-icons/bi";
+import { BsDatabaseCheck, BsSend } from "react-icons/bs";
 import { LuChevronDown } from "react-icons/lu";
-import { PiBuilding } from "react-icons/pi";
+import { PiBuilding, PiExamBold } from "react-icons/pi";
 import { AiOutlineProduct } from "react-icons/ai";
-import { GrServices } from "react-icons/gr";
-import { useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
+import { GrServices, GrTechnology } from "react-icons/gr";
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useScroll, useTransform, Variants } from "framer-motion";
+import { createPortal } from "react-dom";
+import { useLenis } from "lenis/react";
+import { MdOutlineBusinessCenter } from "react-icons/md";
+import { GoArrowUpRight } from "react-icons/go";
+import { IoCloudUploadOutline } from "react-icons/io5";
+import { LiaIndustrySolid } from "react-icons/lia";
 
 export default function Navbar() {
   const { scrollYProgress } = useScroll();
@@ -20,7 +27,12 @@ export default function Navbar() {
   );
   
   return (
-    <header className="container mx-auto pointer-events-none fixed left-0 right-0 top-0 z-50 w-full px-2 py-4">
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="container mx-auto pointer-events-none fixed left-0 right-0 top-0 z-50 w-full px-2 py-4"
+    >
       <motion.nav
         style={{ 
           maxWidth,
@@ -31,12 +43,13 @@ export default function Navbar() {
           stiffness: 500,
           damping: 30
         }}
-        className="mx-auto backdrop-blur-lg border-2 pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full px-4 py-1 transition-colors">
+        className="mx-auto backdrop-blur-lg border-2 pointer-events-auto flex w-full items-center justify-between gap-6 rounded-full pl-4 pr-2 py-1 transition-colors"
+      >
         <CompanyIcon />
         <CompanyNav />
         <CompanyOptions />
       </motion.nav>
-    </header>
+    </motion.header>
   )
 }
 
@@ -70,9 +83,24 @@ const navOptions: NavOptions[] = [
     label: "Products",
     url: "/products",
     subOptions: [
-      { label: "Web Development", url: "/products/web-development" },
-      { label: "Mobile Development", url: "/products/mobile-development" },
-      { label: "Custom Software", url: "/products/custom-software" },
+      {
+        logo: <MdOutlineBusinessCenter />,
+        label: "eazzyBizz",
+        description: "An all-in-one business management software for all enterprises.",
+        url: "/products/eazzybizz"
+      },
+      {
+        logo: <PiExamBold />,
+        label: "eazzyPrep",
+        description: "An online AI mock test platform for competitive examinations.",
+        url: "/products/eazzyprep"
+      },
+      {
+        logo: <AiOutlineProduct />,
+        label: "Custom Software",
+        description: "Build responsive and dynamic websites with our expert team.",
+        url: "/products/custom-software"
+      },
     ]
   },
   {
@@ -80,9 +108,30 @@ const navOptions: NavOptions[] = [
     label: "Services",
     url: "/services",
     subOptions: [
-      { label: "Consulting", url: "/services/consulting" },
-      { label: "Development", url: "/services/development" },
-      { label: "Maintenance", url: "/services/maintenance" },
+      {
+        logo: <BsDatabaseCheck />,
+        label: "Database Support",
+        description: "Our consultants, supporting different database systems with solutions for backups, performance issues & database design.",
+        url: "/services/consulting"
+      },
+      {
+        logo: <GrTechnology />,
+        label: "IT Consulting",
+        description: "Customised Web Based Software as per requirement, Software and Process Flow along with Software Maintenance.",
+        url: "/services/development"
+      },
+      {
+        logo: <IoCloudUploadOutline />,
+        label: "Cloud Migration",
+        description: "Migration of Existing Database from Baremetal to Oracle Cloud from hetrogeneous environment along with zero downtime.",
+        url: "/services/maintenance"
+      },
+      {
+        logo: <LiaIndustrySolid />,
+        label: "IIoT and Industry 4.0",
+        description: "Providing SaaS based solutions for Industry 4.0, Healthcare and Surveillance using IOT & AI for Last-mile Automation.",
+        url: "/services/maintenance"
+      },
     ]
   }
 ]
@@ -103,8 +152,9 @@ function CompanyNav() {
 type NavOptions = {
   logo?: React.ReactNode,
   label: string,
+  description?: string,
   url: string,
-  subOptions?: NavOptions[]
+  subOptions?: Omit<NavOptions, 'subOptions'>[]
 }
 
 function Tab({
@@ -119,33 +169,31 @@ function Tab({
     <li>
       {
         subOptions ? (
-          <div
+          <button
             onMouseEnter={() => setActive(index)}
             onMouseLeave={() => setActive(null)}
-            className="relative flex items-center gap-1.5 py-1 px-3"
+            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-300' : 'text-secondary'}`}
           >
             <div>{ label }</div>
-            { subOptions && <LuChevronDown /> }
-            {
-              active === index && subOptions && (
-                <motion.ul className="bg-stone-900 absolute top-[115%] left-1/2 -translate-x-1/2 flex flex-col gap-2 bg-backdrop shadow backdrop-blur-md rounded-lg p-4">
-                  {
-                    subOptions.map((option, i) => (
-                      <SubTab key={i} {...option} />
-                    ))
-                  }
-                </motion.ul>
-              )
-            }
+            { subOptions && <LuChevronDown className={`${active === index ? '-rotate-180' : 'rotate-0'} transition-transform`} /> }
+            <AnimatePresence>
+              {
+                active === index && subOptions && <SubTabOptions subOptions={subOptions} url={url} />
+              }
+            </AnimatePresence>
             {
               active === index && <Cursor />
             }
-          </div>
+            {
+              active === index && <div className="absolute top-full inset-x-0 h-5 -z-10" />
+            }
+          </button>
         ) : (
           <Link
             onMouseEnter={() => setActive(index)}
             onMouseLeave={() => setActive(null)}
-            href={ url } className="relative flex items-center gap-1.5 py-1 px-3"
+            href={ url }
+            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-300' : 'text-secondary'}`}
           >
             <div>{ label }</div>
             {
@@ -159,10 +207,41 @@ function Tab({
   )
 }
 
-function SubTab({ label, url }: NavOptions) {
+function SubTabOptions({ subOptions, url }: { subOptions: Omit<NavOptions, 'subOptions'>[], url: string }) {
+  return (
+    <motion.ul className="bg-stone-900 text-secondary w-80 absolute top-[120%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2">
+      {
+        subOptions.slice(0, 3).map((option, i) => (
+          <SubTab key={i} {...option} />
+        ))
+      }
+      <li className="text-xs px-2 text-left w-max mt-1">
+        <Link href={url} className="flex gap-1 items-center text-border hover:text-secondary transition-colors">
+          <div>Show more items</div>
+          <GoArrowUpRight className="size-[1.2em]" />
+        </Link>
+      </li>
+    </motion.ul>
+  )
+}
+
+function SubTab({ label, url, description, logo }: Omit<NavOptions, 'subOptions'>) {
   return (
     <li>
-      <Link href={ url }>{ label }</Link>
+      <Link href={ url } className="flex gap-2 text-sm text-left hover:bg-stone-700 transition-colors rounded p-2">
+        <div className="*:size-[1.2em]">
+          { logo }
+        </div>
+        <div className="flex flex-col grow gap-1">
+          <div className="font-semibold">{ label }</div>
+          {
+            description &&
+            <div className="text-xs text-stone-400 line-clamp-2">
+              { description }
+            </div>
+          }
+        </div>
+      </Link>
     </li>
   )
 }
@@ -179,32 +258,126 @@ function Cursor() {
 function CompanyOptions() {
   const [openModal, setOpenModal] = useState(false)
   const toggler = () => setOpenModal(prev => !prev)
+  const modalRef = useRef<HTMLDivElement | null>(null)
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      setOpenModal(false)
+    }
+  };
+
+  const lenis = useLenis()
+  useEffect(() => {
+    if (openModal) {
+      lenis?.stop()
+      document.addEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "hidden";
+    } else {
+      lenis?.start()
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.body.style.overflow = "";
+    };
+  }, [openModal, lenis]);
+  
   return (
     <div>
-      <motion.button
-        layoutId="contact-us-modal"
+      <button
         onClick={toggler}
-        className="relative cursor-pointer hover:bg-secondary hover:text-black bg-primary text-seconbg-secondary transition-colors py-2 px-4 rounded-full"
+        aria-labelledby="contact-us-heading"
+        aria-describedby="contact-us-description"
+        className="cursor-pointer hover:bg-secondary hover:text-black bg-primary text-seconbg-secondary transition-colors py-2 px-4 rounded-full"
       >
-        Contact Us
-      </motion.button>
+        <h1 id="contact-us-heading">Contact Us</h1>
+      </button>
       <AnimatePresence>
         {
-          openModal && <ContactUsModal />
+          openModal && <ContactUsModal toggler={toggler} ref={modalRef} />
         }
       </AnimatePresence>
     </div>
   )
 }
 
-function ContactUsModal() {
-  return (
-    <motion.div
-      layoutId='contact-us-modal'
-      className="fixed flex"
-    >
-
-    </motion.div>
+function ContactUsModal({ toggler, ref }: {toggler: () => void, ref?: React.Ref<HTMLDivElement>}) {
+  const variants: Variants = {
+    initial: {
+      opacity: 0,
+      y: 20
+    },
+    animate: {
+      opacity: 1,
+      y: 0
+    }
+  }
+  return createPortal(
+    <>
+      <motion.div
+        ref={ref}
+        variants={variants}
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.5 }}
+        className="fixed z-111 top-1/2 left-1/2 -translate-1/2 flex w-full max-w-120 bg-stone-900 rounded-lg shadow-lg backdrop-blur-md border-2 border-border/30"
+      >
+        <button
+          onClick={toggler}
+          aria-label="Close"
+          className="absolute top-5 right-5 cursor-pointer ring-2 px-1.5 rounded-full text-stone-400 hover:text-stone-200 transition-colors"
+        >
+          ✖
+        </button>
+        <div className="flex flex-col gap-2 items-center w-full h-full rounded-lg shadow-lg">
+          <motion.h2 initial='initial' animate='animate' id='contact-us-heading' className="text-3xl font-semibold mt-5 font-heading tracking-wide">Contact Us</motion.h2>
+            <p id='contact-us-description' className="text-center text-stone-400 px-6 text-sm">
+              Have questions or need assistance? Drop us a message and our team will get back to you as soon as possible. We&apos;re here to help!
+            </p>
+          <form className="flex flex-col items-center w-full gap-2 mt-2 mb-5">
+            <input
+              type="text"
+              name='name'
+              placeholder="Your Name"
+              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+            />
+            <input
+              type="email"
+              name='email'
+              placeholder="Your Email"
+              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+            />
+            <input
+              type="text"
+              name='subject'
+              placeholder="Subject"
+              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop transition-colors disabled:cursor-not-allowed"
+            />
+            <textarea
+              name='message'
+              placeholder="Your Message"
+              className="w-4/5 p-2 rounded-lg border-2 border-border/50 bg-backdrop resize-none transition-colors disabled:cursor-not-allowed"
+              rows={4}
+            />
+            <button
+              type="submit"
+              className="cursor-pointer bg-primary hover:bg-secondary text-secondary hover:text-black flex gap-2 items-center mt-2 text-seconbg-secondary transition-colors py-2 px-4 rounded-full"
+            >
+              <BsSend className="size-[1.15em]" /><div>Send Message</div>
+            </button>
+          </form>
+        </div>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/40 z-110 backdrop-blur-xs"
+      />
+    </>,
+    document.body
   )
 }
 

@@ -1,3 +1,4 @@
+import AboutUs from "@/components/AboutUs";
 import HeroSection from "@/components/HeroSection";
 import Footer from "@/ui/Footer";
 import Navbar, { MobileNavbar } from "@/ui/Navbar";
@@ -9,6 +10,7 @@ export default function Home() {
       <Navbar />
       <MobileNavbar />
       <HeroSection />
+      <AboutUs />
       <HeroSection />
       <HeroSection />
       <QuoboBotButton />
