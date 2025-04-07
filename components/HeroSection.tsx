@@ -1,5 +1,5 @@
 'use client'
-// import AnimatedSection from "@/ui/AnimatedSection";
+
 import WorldGlobe from "@/ui/WorldGlobe";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
