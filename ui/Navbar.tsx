@@ -160,6 +160,12 @@ type NavOptions = {
   subOptions?: Omit<NavOptions, 'subOptions'>[]
 }
 
+type NavOptionsProps = NavOptions & {
+  index: number,
+  active: number | null,
+  setActive: (index: number | null) => void
+}
+
 function Tab({
   label,
   url,
@@ -167,7 +173,7 @@ function Tab({
   index,
   active,
   setActive
-}: NavOptions & { index: number, active: number | null, setActive: (index: number | null) => void }) {
+}: NavOptionsProps) {
   return (
     <li>
       {
@@ -175,7 +181,7 @@ function Tab({
           <button
             onMouseEnter={() => setActive(index)}
             onMouseLeave={() => setActive(null)}
-            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-300' : 'text-secondary'}`}
+            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-400' : 'text-secondary'}`}
           >
             <div>{ label }</div>
             { subOptions && <LuChevronDown className={`${active === index ? 'rotate-180' : 'rotate-0'} transition-transform`} /> }
@@ -196,7 +202,7 @@ function Tab({
             onMouseEnter={() => setActive(index)}
             onMouseLeave={() => setActive(null)}
             href={ url }
-            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-300' : 'text-secondary'}`}
+            className={`relative select-none flex items-center gap-1.5 py-1 px-3 cursor-pointer transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-400' : 'text-secondary'}`}
           >
             <div>{ label }</div>
             {
@@ -216,7 +222,7 @@ function SubTabOptions({ subOptions, url }: { subOptions: Omit<NavOptions, 'subO
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
-      className="bg-stone-900 text-secondary w-80 absolute top-[130%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2 after:absolute after:bg-slate-900 after:size-2 after:left-1/2 after:-translate-x-1/2 after:-top-1 after:rotate-45 after:-z-1"
+      className="cursor-auto bg-stone-900 text-secondary w-80 absolute top-[130%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2 after:absolute after:bg-slate-900 after:size-2 after:left-1/2 after:-translate-x-1/2 after:-top-1 after:rotate-45 after:-z-1"
     >
       {
         subOptions.slice(0, 3).map((option, i) => (
@@ -431,12 +437,13 @@ function ContactUsModal({ toggler, ref }: {toggler: () => void, ref?: React.Ref<
 }
 
 export function MobileNavbar() {
+  const [active, setActive] = useState<number | null>(null)
   return (
-    <nav className="flex items-center justify-center fixed bottom-0 left-0 right-0 z-50 w-full sm:hidden">
-      <ul className="group/mobile *:group-hover/mobile:not-hover:text-border *:transition-colors flex w-full justify-evenly rounded-t-3xl border-t border-border/30 bg-backdrop shadow backdrop-blur-md">
+    <nav className="flex items-center justify-center fixed z-500 bottom-0 left-0 right-0 w-full sm:hidden">
+      <ul className="flex w-full justify-evenly rounded-t-3xl border-t border-border/30 bg-backdrop shadow backdrop-blur-md">
         {
           navOptions.map((option, i) => (
-            <MobileTab key={i} {...option} />
+            <MobileTab key={i} {...option} index={i} active={active} setActive={setActive} />
           ))
         }
       </ul>
@@ -444,20 +451,67 @@ export function MobileNavbar() {
   )
 }
 
-function MobileTab({ logo, label, url, subOptions }: NavOptions) {
+function MobileTab({
+  logo,
+  label,
+  url,
+  subOptions,
+  index,
+  active,
+  setActive
+}: NavOptionsProps) {
   return (
-    <li className="">
-      <Link href={url} className="flex items-center gap-2">
-        <div className="flex flex-col items-center py-4 gap-1 *:first:size-[1.3em]">
-          { logo }
-          <div>
-            { label }
-          </div>
-        </div>
-        {
-          subOptions && <LuChevronDown />
-        }
-      </Link>
+    <li className="text-sm">
+      {
+        subOptions ? (
+            <button
+              onMouseEnter={() => setActive(index)}
+              onMouseLeave={() => setActive(null)}
+              className={`relative cursor-pointer flex items-center flex-col gap-1 py-4 *:first:size-[1.5em] transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-400' : 'text-secondary'}`}
+            >
+            {logo}
+            <div>{label}</div>
+            <AnimatePresence>
+              {
+                active === index && subOptions && <MobileSubTabOptions subOptions={subOptions} url={url} />
+              }
+            </AnimatePresence>
+            </button>
+        ) : (
+          <Link
+            onMouseEnter={() => setActive(index)}
+            onMouseLeave={() => setActive(null)}
+            href={url}
+            className={`relative cursor-pointer flex items-center flex-col gap-1 py-4 *:first:size-[1.5em] transition-colors ${active !== null ? active === index ? 'text-secondary' : 'text-stone-400' : 'text-secondary'}`}
+          >
+            { logo }
+            <div>{ label }</div>
+          </Link>
+        )
+      }
     </li>
+  )
+}
+
+function MobileSubTabOptions({ subOptions, url }: { subOptions: Omit<NavOptions, 'subOptions'>[], url: string }) {
+  return (
+    <motion.ul
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      className="z-500 cursor-auto bg-stone-900 text-secondary w-[90%] fixed bottom-[120%] left-1/2 -translate-x-1/2 flex flex-col bg-backdrop shadow backdrop-blur-md rounded-lg p-2"
+    >
+      {
+        subOptions.slice(0, 3).map((option, i) => (
+          <SubTab key={i} {...option} />
+        ))
+      }
+      <li className="text-xs px-2 text-left w-max mt-1">
+        <Link href={url} className="flex gap-1 items-center text-border hover:text-secondary transition-colors">
+          <div>Show more items</div>
+          <GoArrowUpRight className="size-[1.2em]" />
+        </Link>
+      </li>
+    </motion.ul>
   )
 }

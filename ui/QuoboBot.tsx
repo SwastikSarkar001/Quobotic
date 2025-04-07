@@ -90,10 +90,10 @@ export default function QuoboBotButton() {
         transition={showAnimation ? { duration: 0.8, delay: 0.6 } : undefined}
         onClick={toggleChat}
         aria-labelledby="ask-quobobot"
-        className={`group right-10 cursor-pointer bg-primary rounded-full text-secondary fixed z-100 p-4 bottom-24`}
+        className={`group right-6 sm:right-10 cursor-pointer bg-primary rounded-full text-secondary fixed z-100 p-3 sm:p-4 bottom-24`}
       >
-        <BiBot className="size-8" />
-        <div id='ask-quobobot' className="opacity-0 space-y-0.5 transition-all text-secondary group-hover:opacity-100 absolute leading-4 -z-1 text-sm text-nowrap pointer-events-none top-0 group-hover:-top-16 left-1/2 -translate-x-1/2 py-2 px-2 bg-primary rounded-lg after:absolute after:size-2 after:bg-primary after:-bottom-1 after:-z-1 after:right-1/2 after:translate-x-1/2 after:rotate-45">
+        <BiBot className="size-6 sm:size-8" />
+        <div id='ask-quobobot' className="opacity-0 space-y-0.5 transition-all text-secondary group-hover:opacity-100 absolute leading-4 -z-1 text-xs sm:text-sm text-nowrap pointer-events-none top-0 group-hover:-top-16 left-1/2 -translate-x-1/2 py-2 px-2 bg-primary rounded-lg after:absolute after:size-2 after:bg-primary after:-bottom-1 after:-z-1 after:right-1/2 after:translate-x-1/2 after:rotate-45">
           <div>Ask QuoboBot</div>
           <kbd className="px-1.5 py-0.5 text-xs font-semibold text-stone-300">{shortcut}</kbd>
         </div>
@@ -170,7 +170,7 @@ function QuoboBotChat({toggleChat, ref}: {toggleChat: () => void, ref?: React.Re
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed z-102 bottom-24 right-10 w-80 h-96 bg-stone-900 shadow-lg rounded-lg p-4 flex flex-col border-2 border-border/40"
+      className="fixed z-102 bottom-24 right-6 sm:right-10 w-70 sm:w-80 h-96 bg-stone-900 shadow-lg rounded-lg p-2.5 sm:p-4 flex flex-col border-2 border-border/40"
     >
       <button
         onClick={toggleChat}

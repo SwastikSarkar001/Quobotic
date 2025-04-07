@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AnimatedScroll from "@/ui/SmoothScrolling";
+import SmoothScrolling from "@/ui/SmoothScrolling";
 import { Toaster } from 'sonner'
 
 
@@ -16,10 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <AnimatedScroll>
+      <SmoothScrolling>
         {children}
-      </AnimatedScroll>
-      <Toaster position='top-right' theme="dark" closeButton duration={6000} />
+        <Toaster position='top-right' theme="dark" closeButton duration={6000} />
+      </SmoothScrolling>
     </html>
   );
 }

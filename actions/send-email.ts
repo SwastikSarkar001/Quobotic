@@ -14,9 +14,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_APP_HOST,
     pass: process.env.EMAIL_APP_PASSWORD,
   },
-  pool: true,  // Enables connection pooling
-  maxConnections: 5,  // Allow up to 5 parallel connections
-  maxMessages: 10,  // Reuse a connection for up to 10 emails
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 10
 });
 
 const sendEmail = async (prevState: emailFormType, formData: FormData) => {
@@ -37,7 +37,7 @@ const sendEmail = async (prevState: emailFormType, formData: FormData) => {
   if (!name) {
     return {
       error: {
-        name: 'Name is required'
+        name: 'Please provide your name. It is a required field.'
       },
       success: false
     }
@@ -45,7 +45,7 @@ const sendEmail = async (prevState: emailFormType, formData: FormData) => {
   if (!email) {
     return {
       error: {
-        email: 'Email is required'
+        email: 'Please provide your email address. It is a required field.'
       },
       success: false
     }
@@ -61,7 +61,7 @@ const sendEmail = async (prevState: emailFormType, formData: FormData) => {
   if (!subject) {
     return {
       error: {
-        subject: 'Subject is required'
+        subject: 'Please provide a subject for your message. It is a required field.'
       },
       success: false
     }
@@ -69,7 +69,7 @@ const sendEmail = async (prevState: emailFormType, formData: FormData) => {
   if (!message) {
     return {
       error: {
-        message: 'Message is required'
+        message: 'Please provide a message. It is a required field and cannot be left empty.'
       },
       success: false
     }
@@ -86,9 +86,8 @@ const sendEmail = async (prevState: emailFormType, formData: FormData) => {
     <p><strong>Subject:</strong> ${subject}</p>
     <p><strong>Message:</strong><br>${(message as string).replace(/\n/g, '<br>')}</p>
     <p>—<br>Quobotic Consulting Pvt. Ltd.</p>
-    `, // html body,
-    replyTo: email as string,
-
+    `,
+    replyTo: email as string
   }
   const info = await transporter.sendMail(receiverMail);
   console.log(`Message sent: ${info.messageId}`);

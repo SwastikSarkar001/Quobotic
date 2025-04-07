@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function AnimatedScroll({ children }: React.PropsWithChildren) {
+export default function SmoothScrolling({ children }: React.PropsWithChildren) {
   return (
     <motion.body
       className={`${monaSans.variable} ${geistMono.variable} ${dmSerifText.variable} antialiased`}

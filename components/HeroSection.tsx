@@ -2,6 +2,7 @@
 // import AnimatedSection from "@/ui/AnimatedSection";
 import WorldGlobe from "@/ui/WorldGlobe";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Link from "next/link";
 import { useRef } from "react";
 import { BsArrowRight } from "react-icons/bs";
 
@@ -65,15 +66,15 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
-          className="flex flex-col sm:flex-row gap-x-6 gap-y-4"
+          className="flex flex-col sm:flex-row gap-x-6 gap-y-3"
         >
-          <button className="transition-colors flex items-center cursor-pointer bg-primary border border-primary hover:border-secondary hover:bg-secondary text-white hover:text-black px-6 py-3 rounded-full">
+          <Link href='/products' className="not-md:text-sm transition-colors flex items-center justify-center cursor-pointer bg-primary border border-primary hover:border-secondary hover:bg-secondary text-white hover:text-black px-4 py-2 md:px-6 md:py-3 rounded-full">
             Get Started
             <BsArrowRight className="ml-2" />
-          </button>
-          <button className="transition-colors flex items-center cursor-pointer bg-stone-950 border border-stone-700 text-white hover:bg-stone-800 px-6 py-3 rounded-full">
+          </Link>
+          {/* <button className="not-md:text-sm transition-colors flex items-center justify-center cursor-pointer bg-stone-950 border border-stone-700 text-white hover:bg-stone-800 px-4 py-2 md:px-6 md:py-3 rounded-full">
             Learn More
-          </button>
+          </button> */}
         </motion.div>
       </motion.div>
     </section>
