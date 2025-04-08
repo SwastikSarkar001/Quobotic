@@ -6,6 +6,11 @@ import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
   title: "Quobotic Consulting",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg"
+  },
   description: "Quobotic Consulting is a software development company that specializes in building web applications.",
 };
 

@@ -1,24 +1,25 @@
 'use client'
 
-import Image from "next/image";
-import Link from "next/link";
-import { BiHome } from "react-icons/bi";
-import { BsDatabaseCheck, BsSend } from "react-icons/bs";
-import { LuChevronDown } from "react-icons/lu";
 import { PiBuilding, PiExamBold, PiSpinnerBold } from "react-icons/pi";
+import { BiHome } from "react-icons/bi";
+import { LuChevronDown } from "react-icons/lu";
+import { BsDatabaseCheck, BsSend } from "react-icons/bs";
 import { AiOutlineProduct } from "react-icons/ai";
 import { GrServices, GrTechnology } from "react-icons/gr";
-import { useActionState, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useScroll, useTransform, Variants } from "framer-motion";
-import { createPortal } from "react-dom";
-import { useLenis } from "lenis/react";
 import { MdOutlineBusinessCenter } from "react-icons/md";
 import { GoArrowUpRight } from "react-icons/go";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { LiaIndustrySolid } from "react-icons/lia";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { AnimatePresence, motion, useScroll, useTransform, Variants } from "framer-motion";
+import { useLenis } from "lenis/react";
 import sendEmail from "@/actions/send-email";
 import { emailFormType } from "@/types/types";
-import { toast } from "sonner";
+import { toast } from "sonner"
 
 export default function Navbar() {
   const { scrollYProgress } = useScroll();
