@@ -9,7 +9,7 @@ import { GrServices, GrTechnology } from "react-icons/gr";
 import { MdOutlineBusinessCenter } from "react-icons/md";
 import { GoArrowUpRight } from "react-icons/go";
 import { IoCloudUploadOutline } from "react-icons/io5";
-import { LiaIndustrySolid } from "react-icons/lia";
+import { LiaIndustrySolid, LiaRibbonSolid } from "react-icons/lia";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -100,10 +100,10 @@ const navOptions: NavOptions[] = [
         url: "/products/eazzyprep"
       },
       {
-        logo: <AiOutlineProduct />,
-        label: "Custom Software",
-        description: "Build responsive and dynamic websites with our expert team.",
-        url: "/products/custom-software"
+        logo: <LiaRibbonSolid />,
+        label: "CureVision",
+        description: "AI-enabled healthcare technology for breast cancer detection.",
+        url: "https://curevision.quobotic.com/"
       },
     ]
   },
@@ -243,7 +243,7 @@ function SubTabOptions({ subOptions, url }: { subOptions: Omit<NavOptions, 'subO
 function SubTab({ label, url, description, logo }: Omit<NavOptions, 'subOptions'>) {
   return (
     <li>
-      <Link href={ url } className="flex gap-2 text-sm text-left hover:bg-stone-700 transition-colors rounded p-2">
+      <Link target="_blank" href={ url } className="flex gap-2 text-sm text-left hover:bg-stone-700 transition-colors rounded p-2" passHref={url.includes('https://')}>
         <div className="*:size-[1.2em]">
           { logo }
         </div>

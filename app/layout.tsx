@@ -3,7 +3,6 @@ import "./globals.css";
 import SmoothScrolling from "@/ui/SmoothScrolling";
 import { Toaster } from 'sonner'
 
-
 export const metadata: Metadata = {
   title: "Quobotic Consulting",
   icons: {
