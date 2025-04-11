@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { RiFacebookFill, RiLinkedinFill, RiTwitterXFill } from "react-icons/ri";
+import { RiFacebookFill, RiInstagramFill, RiLinkedinFill, RiTwitterXFill } from "react-icons/ri";
 import { MdOutlineMailOutline, MdOutlinePhone } from "react-icons/md";
 
 export default function Footer() {
@@ -61,27 +61,46 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold mb-2">Follow Us</h3>
             <ul className="flex flex-col gap-1 text-sm not-md:items-center">
-              <li>
-                <Link href={`https://twitter.com/${process.env.NEXT_PUBLIC_CONTACT_FACEBOOK}`} className="flex items-center gap-0.5 text-stone-400 hover:text-[#1877F2] transition-colors" passHref>
-                  <RiFacebookFill className="sixe-[1.2em]" />
-                  <span>/</span>
-                  <span>{process.env.NEXT_PUBLIC_CONTACT_FACEBOOK}</span>
-                </Link>
-              </li>
-              <li>
-                <Link href={`https://twitter.com/${process.env.NEXT_PUBLIC_CONTACT_XTWITTER}`} className="flex items-center gap-0.5 text-stone-400 hover:text-white transition-colors" passHref>
-                  <RiTwitterXFill className="sixe-[1.2em]" />
-                  <span>/</span>
-                  <span>{process.env.NEXT_PUBLIC_CONTACT_XTWITTER}</span>
-                </Link>
-              </li>
-              <li>
-                <Link href={`https://linkedin.com/company/${process.env.NEXT_PUBLIC_CONTACT_LINKEDIN}`} className="flex items-center gap-0.5 text-stone-400 hover:text-[#71b7fb] transition-colors" passHref>
-                  <RiLinkedinFill className="sixe-[1.2em]" />
-                  <span>/</span>
-                  <span>{process.env.NEXT_PUBLIC_CONTACT_LINKEDIN}</span>
-                </Link>
-              </li>
+              {
+                process.env.NEXT_PUBLIC_CONTACT_FACEBOOK &&
+                <li>
+                  <Link href={`https://twitter.com/${process.env.NEXT_PUBLIC_CONTACT_FACEBOOK}`} className="flex items-center gap-0.5 text-stone-400 hover:text-[#1877F2] transition-colors" passHref>
+                    <RiFacebookFill className="sixe-[1.2em]" />
+                    <span>/</span>
+                    <span>{process.env.NEXT_PUBLIC_CONTACT_FACEBOOK}</span>
+                  </Link>
+                </li>
+              }
+              {
+                process.env.NEXT_PUBLIC_CONTACT_INSTAGRAM &&
+                <li>
+                  <Link href={`https://instagram.com/${process.env.NEXT_PUBLIC_CONTACT_INSTAGRAM}`} className="flex items-center gap-0.5 text-stone-400 hover:text-[#E1306C] transition-colors" passHref>
+                    <RiInstagramFill className="sixe-[1.2em]" />
+                    <span>/</span>
+                    <span>{process.env.NEXT_PUBLIC_CONTACT_INSTAGRAM}</span>
+                  </Link>
+                </li>
+              }
+              {
+                process.env.NEXT_PUBLIC_CONTACT_XTWITTER &&
+                <li>
+                  <Link href={`https://twitter.com/${process.env.NEXT_PUBLIC_CONTACT_XTWITTER}`} className="flex items-center gap-0.5 text-stone-400 hover:text-white transition-colors" passHref>
+                    <RiTwitterXFill className="sixe-[1.2em]" />
+                    <span>/</span>
+                    <span>{process.env.NEXT_PUBLIC_CONTACT_XTWITTER}</span>
+                  </Link>
+                </li>
+              }
+              {
+                process.env.NEXT_PUBLIC_CONTACT_LINKEDIN &&
+                <li>
+                  <Link href={`https://linkedin.com/company/${process.env.NEXT_PUBLIC_CONTACT_LINKEDIN}`} className="flex items-center gap-0.5 text-stone-400 hover:text-[#71b7fb] transition-colors" passHref>
+                    <RiLinkedinFill className="sixe-[1.2em]" />
+                    <span>/</span>
+                    <span>{process.env.NEXT_PUBLIC_CONTACT_LINKEDIN}</span>
+                  </Link>
+                </li>
+              }
             </ul>
           </div>
         </div>
